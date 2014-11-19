@@ -2,12 +2,17 @@
 
 import inspect
 import collections
-import threading
+
+__all__ = [
+    'Item',
+    'ConstGroup',
+]
 
 class Item(object):
     def __init__(self, value, title):
         self._value = value
         self._title = title
+        self._key   = ''
 
     @property
     def value(self):
@@ -17,6 +22,10 @@ class Item(object):
     def title(self):
         return self._title
 
+    @property
+    def key(self):
+        return self._key
+
     def __get__(self, obj, cls):
         return self._value
 
@@ -24,13 +33,16 @@ class Item(object):
 class ConstGroup(object):
     @classmethod
     def _get_title_map(cls):
-        if not hasattr(cls, '__title_map__'):
-            if not hasattr(cls, '__title_map__'):
-                cls.__title_map__ = collections.OrderedDict()
-                for field, _ in inspect.getmembers(cls):
-                    field_obj = cls.__dict__.get(field, None)
-                    if isinstance(field_obj, Item):
-                        cls.__title_map__[field_obj.value] = field_obj.title
+        if not '__title_map__' in cls.__dict__:
+            cls.__title_map__ = collections.OrderedDict()
+            for field, _ in inspect.getmembers(cls):
+                field_obj = cls.__dict__.get(field, None)
+                if not isinstance(field_obj, Item):
+                    continue
+                if field_obj.value in cls.__title_map__:
+                    raise ValueError('Duplicated const value %s in group %s' \
+                        % (str(field_obj.value), cls.__name__))
+                cls.__title_map__[field_obj.value] = field_obj.title
         return cls.__title_map__
 
     @classmethod
@@ -43,8 +55,13 @@ class ConstGroup(object):
 
     @classmethod
     def get_choices(cls):
-        return cls._get_title_map().items()
+        choices = cls._get_title_map().items()
+        choices.sort(key = lambda item: item[0])
+        return choices
 
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._get_title_map()
 
 if '__main__' == __name__:
     import sys
@@ -56,11 +73,11 @@ if '__main__' == __name__:
         PAID    = Item(2,   '已支付')
         FINISH  = Item(10,  '已完成')
 
-    print OrderStatus.UNPAY
-    print OrderStatus.__dict__['UNPAY'].title
+    assert 1 == OrderStatus.UNPAY
+    assert '未支付' == OrderStatus.__dict__['UNPAY'].title
 
     status = OrderStatus.PAID
-    print OrderStatus.get_title(status, 'xx')
+    assert '已支付' == OrderStatus.get_title(status, 'cannot get title')
 
     
     print 'All test are passed!'
