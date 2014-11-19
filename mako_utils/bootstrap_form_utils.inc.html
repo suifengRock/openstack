@@ -1,0 +1,128 @@
+
+<%def name="row_form(form, target_url = '', method = 'POST', submit_text = '提交', colspans = (2, 5, 5), **kwargs)">
+    <form action="${target_url}" method="${method}" class="form-horizontal">
+        % for field in form:
+            % if field.type in ['HiddenField']:
+                ${field()}
+                <% continue %>
+            % endif
+            % if field.errors:
+        <div class="form-group has-error">
+            % else:
+        <div class="form-group">
+            % endif
+            ${ field.label(class_ = 'col-sm-' + str(colspans[0]) + ' control-label') }
+            <div class="col-sm-${colspans[1]}">
+                % if field.type in ['SelectField']:
+                ${ field(class_ = 'form-control', style = 'max-width: 300px;') }
+                % else:
+                ${ field(class_ = 'form-control') }
+                % endif
+            </div>
+            % if field.errors:
+            <div class="col-sm-${colspans[2]} help-block">
+                ${ field.errors[0] | h}
+            </div>
+            % endif
+        </div>
+        % endfor
+        <div class="form-group">
+            <div class="col-sm-offset-${colspans[0]} col-sm-${colspans[1]}">
+                <button type="submit" class="btn btn-primary">${ submit_text }</button>
+            </div>
+        </div>
+    </form>
+</%def>
+
+<%def name="line_form(form, target_url = '', method = 'POST', submit_text = '提交', colspans = (2, 5, 5), **kwargs)">
+    <form action="${target_url}" method="${method}" class="form-inline">
+        % for field in form:
+            % if field.type in ['HiddenField']:
+                ${field()}
+                <% continue %>
+            % endif
+            % if field.errors:
+        <div class="form-group has-error">
+            % else:
+        <div class="form-group">
+            % endif
+            ${ field.label(class_ = 'control-label') }
+            <%
+                field_kwargs = {}
+                if field.errors:
+                    field_kwargs['data-toggle'] = 'tooltip'
+                    field_kwargs['data-placement'] = 'bottom'
+                    field_kwargs['title'] = field.errors[0]
+            %>
+            % if field.type in ['SelectField']:
+            ${ field(class_ = 'form-control', style = 'max-width: 300px;', **field_kwargs) }
+            % else:
+            ${ field(class_ = 'form-control', **field_kwargs) }
+            % endif
+        </div>
+        % endfor
+        <div class="form-group">
+                <button type="submit" class="btn btn-primary">${ submit_text }</button>
+        </div>
+    </form>
+</%def>
+
+<%def name="form_table(form_class, items, only_fields = [], skip_fields = [], tail_cols = [])">
+    <%
+        def _is_field_exists(item, field):
+            import collections
+            if isinstance(item, collections.Iterable):
+                return field in item
+            return hasattr(item, field)
+            
+        def _get_item_field(item, field, default = None):
+            import collections
+            if isinstance(item, collections.Iterable):
+                return item.get(field, default)
+            if hasattr(item, field):
+                return getattr(item, field)
+            return default
+
+        foo = form_class()
+        if only_fields:
+            fields = [field for field in foo._fields.itervalues() if field.name in only_fields]
+        else:
+            fields = [field for field in foo._fields.itervalues() if not field.name in skip_fields]
+        choice_dict = dict()
+        for field in fields:
+            if hasattr(field, 'choices'):
+                choice_dict[field.name] = dict([(str(value), text) for value, text in field.choices])
+    %>
+    <table class="table table-bordered table-striped table-hover zp-data-table">
+        <thead>
+          <tr class="success">
+        % for field in fields:
+            <th>${ field.label.text | h }</th>
+        % endfor
+        % for col in tail_cols:
+            <th>${ col | h }</th>
+        % endfor
+          </tr>
+        </thead>
+        <tbody>
+        % for item in items:
+            <tr>
+            % for field in fields:
+                % if not _is_field_exists(item, field.name):
+                <td><i style="color:#999">(null)</i></td>
+                % elif field.name in choice_dict:
+                <td>${ choice_dict.get(field.name, {}).get(str(_get_item_field(item, field.name)), '') | h}</td>
+                % elif hasattr(field, 'get_text'):
+                <td>${ field.get_text(_get_item_field(item, field.name, field.default)) | h}</td>
+                % else:
+                <td>${ _get_item_field(item, field.name, '') | h}</td>
+                % endif
+            % endfor
+            % if caller:
+                ${caller.body(item)}
+            % endif
+            </tr>
+        % endfor
+        </tbody>
+    </table>
+</%def>
