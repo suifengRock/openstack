@@ -1,0 +1,50 @@
+<%inherit file="frame.inc.html"/>
+
+<%block>
+<ol class="breadcrumb">
+    <li><a href="${url_prefix}">API List</a></li>
+    <li>${method_name}</li>
+    <li class="active">接口文档</li>
+</ol>
+
+<%def name="show_types_doc(types)">
+% for type_ in types:
+<div class="panel panel-default">
+    <div class="panel-heading"><a name="${type_.__name__}">${type_.__name__}</a></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="20%">字段名</th>
+                <th width="20%">类型</th>
+                <th width="20%">属性</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for name, info in type_._get_fields():
+            <tr>
+                <td>${name}</td>
+                <td>
+                    % if hasattr(info, 'cls'):
+                        <a href="#${info.cls.__name__}">${info.type_name}</a>
+                    % else:
+                        ${info.type_name}
+                    % endif
+                </td>
+                <td>${info.label_name}</td>
+                <td>${info.desc|h}</td>
+            </tr>
+            % endfor
+        </tbody>
+    </table>
+</div>
+% endfor
+</%def>
+
+<h4>请求协议</h4>
+${show_types_doc(req_types)}
+
+<h4>响应协议</h4>
+${show_types_doc(rsp_types)}
+
+</%block>

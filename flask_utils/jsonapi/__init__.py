@@ -5,11 +5,12 @@ import inspect
 import json
 import functools
 import logging
+import traceback
 import os.path as osp
 from mako.lookup import TemplateLookup
 from mako.template import Template
-from flask import url_for, request, Blueprint
-from niuhe.fields import BasicField
+from flask import url_for, request, Blueprint, abort
+from niuhe.fields import BasicField, MessageField, FileField
 
 __all__ = [
     'ApiException', 'jsonapi', 'jsonapi_class', 'install_api_list',
@@ -78,17 +79,28 @@ class _ApiMethodWrapper(object):
             reqdata = getattr(request, self._dataset)
             for key, field_info in self._req_cls._get_fields():
                 try:
-                    if key not in reqdata:
+                    if isinstance(field_info, FileField):
+                        has_key = key in request.files
+                    else:
+                        has_key = key in reqdata
+                    if not has_key:
                         if field_info.required:
                             logging.error('while calling %s, required field %s is missing',
                                         request.path, key)
                             raise Exception('')
                         continue
                     if field_info.repeated:
-                        setattr(req, key, reqdata.getlist(key))
+                        if isinstance(field_info, FileField):
+                            setattr(req, key, request.files.getlist(key))
+                        else:
+                            setattr(req, key, reqdata.getlist(key))
                     else:
-                        setattr(req, key, reqdata.get(key))
+                        if isinstance(field_info, FileField):
+                            setattr(req, key, request.files.get(key))
+                        else:
+                            setattr(req, key, reqdata.get(key))
                 except Exception, ex:
+                    traceback.print_exc()
                     if self._param_err_handler:
                         self._param_err_handler(key, req, rsp, ex)
                         need_run = False
@@ -123,8 +135,8 @@ def jsonapi_class(app, **kwargs):
     return _inner
 
 def install_api_list(app, prefix):
-    if not prefix.endswith('/'):
-        prefix += '/'
+    if prefix.endswith('/'):
+        prefix = prefix[:-1]
 
     tpl_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'templates')
     tpl_lookup = TemplateLookup(
@@ -133,27 +145,74 @@ def install_api_list(app, prefix):
         output_encoding = 'utf-8',
     )
 
-    def _load_tpl(filename):
-        return tpl_lookup.get_template(filename)
+    static_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'static')
+    apilist_mod = Blueprint(
+        'apilist',
+        __name__,
+        static_folder = static_dir,
+    )
 
-    @app.route(prefix)
+    def _render_template(filename, **kwargs):
+        tpl = tpl_lookup.get_template(filename)
+        if not tpl:
+            abort(503)
+        common_params = dict(
+            url_for=url_for,
+            request=request,
+            url_prefix = prefix,
+        )
+        common_params.update(kwargs)
+        return tpl.render(**common_params)
+
+    @apilist_mod.route('/')
     def api_list():
-        tpl = _load_tpl('api_list.html')
-        return tpl.render(url_prefix = prefix, api_list = _api_list)
+        return _render_template(
+            'api_list.html',
+            api_list = _api_list,
+        )
 
-    @app.route(prefix + '<int:index>')
+    @apilist_mod.route('/<int:index>/debug')
     def api_detail(index):
-        tpl = _load_tpl('api_detail.html')
         app, cls, method_name, wrapper = _api_list[index]
         url_route = app.name + '.' + cls.__name__ \
                 if isinstance(app, Blueprint) else cls.__name__
-        return tpl.render(
-            url_prefix = prefix,
+        return _render_template(
+            'api_detail.html',
             api_url = url_for(url_route, name = wrapper.method_name),
             app = app,
             cls = cls,
             method_name = wrapper.method_name,
             wrapper = wrapper
         )
+
+    @apilist_mod.route('/<int:index>/doc')
+    def api_doc(index):
+        app, cls, method_name, wrapper = _api_list[index]
+        url_route = app.name + '.' + cls.__name__ \
+                if isinstance(app, Blueprint) else cls.__name__
+
+        def _get_all_types(typ):
+           types = [typ]
+           for _, info in typ._get_fields():
+               if isinstance(info, MessageField):
+                   sub_types = _get_all_types(info.cls)
+                   types += sub_types
+           return types
+        req_types = _get_all_types(wrapper.request_type)
+        rsp_types = _get_all_types(wrapper.response_type)
+        print rsp_types
+        return _render_template(
+            'api_doc.html',
+            api_url = url_for(url_route, name = wrapper.method_name),
+            app = app,
+            cls = cls,
+            method_name = wrapper.method_name,
+            wrapper = wrapper,
+            req_types = req_types,
+            rsp_types = rsp_types,
+        )
+
+    app.register_blueprint(apilist_mod, url_prefix = prefix)
+
 
 

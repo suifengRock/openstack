@@ -26,7 +26,8 @@
             <td>${ wrapper.method_name | h }</td>
             <td>${ ','.join(wrapper.http_method) | h }</td>
             <td>
-                <a href="${url_prefix}${index}">测试此接口</a>
+                <a href="${index}/doc">接口文档</a>
+                <a href="${index}/debug">测试此接口</a>
             </td>
         </tr>
         <% index += 1 %>
