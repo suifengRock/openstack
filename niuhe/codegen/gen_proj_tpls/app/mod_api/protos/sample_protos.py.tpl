@@ -2,6 +2,7 @@
 #!-*- coding=utf-8 -*-
 
 from niuhe.protos import *
+from app._common.consts import *
 
 class CommonRequest(Message):
     pass
@@ -27,6 +28,8 @@ class NextEchoReq(SessionalRequest):
     This is a message inheriting SessionalRequest, that makes it contains a field session_id which is defined in SessionalRequest
     '''
     content_items = repeated.StringField()  # content_items is an array of string
+    sample_enum = optional.EnumField(desc='枚举类型示例', group=SampleConstGroup)
+     
 
 @extend_message(ResponseWrapper, 'data')
 class EchoRsp(Message):
