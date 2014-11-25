@@ -31,7 +31,7 @@ class TypeFilter(object):
         self._type = type_
 
     def __call__(self, obj):
-        return isinstance(obj, type) and issubclass(obj, self._type)
+        return isinstance(obj, type) and issubclass(obj, self._type) and obj != self._type
 
 
 class InstanceFilter(object):
