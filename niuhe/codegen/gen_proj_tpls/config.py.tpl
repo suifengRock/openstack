@@ -26,6 +26,13 @@ SECRET_KEY = '${secret_key}'
 
 SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost:3306/demo'
 
+import sys
+if len(sys.argv) > 1:
+    import json
+    with file(sys.argv[1]) as config_file:
+        config_content = json.load(config_file)
+        locals().update(config_content)
+
 logging.basicConfig(
     level   = logging.DEBUG if DEBUG else logging.INFO,
     format  = '%(asctime)s|%(levelname)s|%(message)s',
