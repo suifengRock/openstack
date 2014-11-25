@@ -13,9 +13,9 @@ class DispatchView(View):
         super(DispatchView, self).__init__(*args, **kwargs)
 
     def dispatch_request(self, name):
-        name = name.lower()
-        if '_' == name[0]:
+        if not name or '_' == name[0]:
             abort(404)
+        name = name.lower()
         method = None
         name_with_method = name + '_' + request.method.upper()
         if hasattr(self, name_with_method):
