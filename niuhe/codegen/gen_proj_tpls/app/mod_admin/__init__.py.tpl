@@ -32,7 +32,6 @@ _tpl_lookup = TemplateLookup(
     directories     = _template_directories,
     input_encoding  = 'utf-8',
     output_encoding = 'utf-8',
-    module_directory= '/Users/guanming/guanming/tmp',
 )
 
 def render_template(template_name, **kwargs):
