@@ -1,0 +1,101 @@
+<%namespace name="flask" module="flask" />
+<%inherit file="frame.inc.html"/>
+
+<%def name="render_field(name, field_info, index = 0)">
+    <% id = '_id_%s_%d' % (name, index) %>
+    <div class="form-group">
+        <label for="${id}" class="col-sm-2 control-label">
+            % if field_info.required:
+                <span>*</span>
+            % endif
+            ${name|h}
+        </label>
+        <div class="col-sm-5">
+            % if 'EnumField' == field_info.__class__.__name__:
+            <select id="${id}" name="${name}"class="form-control">
+                % for value, label in field_info.group.get_choices():
+                <option value="${value}">${value} - ${label}</option>
+                % endfor
+            </select>
+			% elif 'BooleanField' == field_info.__class__.__name__:
+			<select id="${id}" name="${name}" class="form-control">
+				<option value="true">是</option>
+				<option value="false">否</option>
+			</select>
+			% elif 'FileField' == field_info.__class__.__name__:
+            <input type="file" name="${name}"id="${id}"
+                class="form-control" />
+            % else:
+            <input type="text" name="${name}"id="${id}"
+                class="form-control" />
+            % endif
+        </div>
+        <div class="col-sm-1">
+			% if not field_info.required:
+            <label class="inline-checkbox">
+                <input class="zp-optional-checkbox" data-for="${id}" type="checkbox" onclick="toggleDisabled(this, '${id}')" />
+            </label>
+			% endif
+        </div>
+		<div class="col-sm-4">
+			<p class="form-static-control">${field_info.desc|h}</p>
+		</div>
+    </div>
+</%def>
+
+<%block>
+<ol class="breadcrumb">
+    <li><a href="${url_prefix}">API List</a></li>
+    <li>${method_name}</li>
+    <li class="active">调试页面</li>
+</ol>
+
+<%
+	form_enc = 'application/x-www-form-urlencoded'
+	for _, info in wrapper.request_type._get_fields():
+		if 'FileField' == info.__class__.__name__:
+			form_enc = 'multipart/form-data'
+			break
+%>
+<form id="id_form" action="${api_url}" method="${wrapper.http_method[0]}" taget="_blank"
+	enctype="${form_enc}" class="form-horizontal" role="form">
+% for name, info in wrapper.request_type._get_fields():
+    ${render_field(name, info)}
+    % if info.repeated:
+        ${render_field(name, info, 1)}
+        ${render_field(name, info, 2)}
+    % endif
+% endfor
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-5">
+            <button type="submit" class="btn">提交</button>
+        </div>
+    </div>
+</form>
+</%block>
+
+<%block name="scripts">
+<script>
+    function toggleDisabled(el, id) {
+        console.log(el.checked);
+        var $target = $('#' + id);
+        if (el.checked) {
+            $target.removeAttr('disabled');
+        } else {
+            $target.attr('disabled', 'disabled');
+        }
+    }
+    $(function() {
+        $('.zp-optional-checkbox').each(function(i, v){
+            var id = $(v).attr('data-for');
+            var $target = $('#' + id);
+            if (!v.checked) {
+                $target.attr('disabled', 'disabled');
+            } else {
+                $target.removeAttr('disabled');
+            }
+        });
+    });
+</script>
+</%block>
+

@@ -1,0 +1,104 @@
+<%inherit file="/admin_frame.inc.html" />
+<%namespace name="form_utils" file="/niuhe/utils/bootstrap_form_utils.inc.html" />
+
+<%block>
+<div class="row">
+	<div class="col-xs-12 col-sm-12">
+		<div class="box">
+			<div class="box-content">
+				<h4 class="page-header">
+					${title|h}
+                    % if not readonly and list_args.get('allow_add', True):
+					<small>
+						<a href="${url_for('.' + view_cls, name = 'add')}">${list_args.get('add_text', '新增')}</a>
+					</small>
+                    % endif
+				</h4>
+
+                <form id="id_list_form" action="" method="get">
+                    <label for="id_page_size" name="page_size">
+                        每页行数
+                    </label>
+                    <select id="id_page_size" name="page_size"
+                        onchange="$('#id_list_form').submit()">
+                        % for option_page_size in [10, 25, 50, 100]:
+                        <option value="${option_page_size}"${' selected="selected"' if option_page_size == page_size else ''}}>${option_page_size}</option>
+                        % endfor
+                    </select>
+                    <%call expr="form_utils.form_table(sample_form, items,
+                        only_fields = only_fields, skip_fields = skip_fields,
+                        tail_cols = ['操作'])" args="item">
+                        <td>
+                            <%
+                                pk_args = '&'.join(['%s=%s' % (key, getattr(item, key)) for key in pk_list])
+                            %>
+                            % if readonly:
+                            <a href="${url_for('.' + view_cls, name = 'view')}?${pk_args}" class="zpsmbtn">
+								${list_args.get('view_text', '查看')}
+							</a>
+                            % else:
+								% if list_args.get('allow_edit', True):
+									<a href="${url_for('.' + view_cls, name = 'edit')}?${pk_args}" class="zpsmbtn">
+										${list_args.get('edit_text', '修改')}
+									</a>
+								% endif
+                                % if list_args.get('allow_del', True):
+                                    <a href="${url_for('.' + view_cls, name = 'del')}?${pk_args}" class="zpsmbtn"
+										onclick="return confirm('是否确定要删除？一旦删除无法恢复')">
+										${list_args.get('del_text', '删除')}
+									</a>
+                                % endif
+                                % for label, action, confirm_text in list_args.get('extend_ops', []):
+									% if confirm_text:
+										<a href="${url_for('.' + view_cls, name = action)}?${pk_args}" class="zpsmbtn">${label}</a>
+											onclick="return confirm('${confirm_text}')">
+									% else:
+										<a href="${url_for('.' + view_cls, name = action)}?${pk_args}" class="zpsmbtn">${label}</a>
+									% endif
+                                % endfor
+                            % endif
+                        </ta>
+                    </%call>
+
+                    <input id="id_page_index" type="hidden" name="page" value="${page_index}" />
+                    <script>
+                        function goToPage(index) {
+                            $('#id_page_index').val(index);
+                            $('#id_list_form').submit();
+                        }
+                    </script>
+
+                    <nav>
+                        <ul class="pagination pagination-sm">
+                            <%
+                                pagings = [
+                                    (1, 				'icon',	'fast-backward'),
+                                    (page_index - 1, 	'icon',	'backward'),
+                                    (page_index,		'text',	'%d / %d' % (page_index, max_page)),
+                                    (page_index + 1, 	'icon',	'forward'),
+                                    (max_page,	 		'icon',	'fast-forward'),
+                                ]
+                            %>
+                            % for page, type_, info in pagings:
+                                <%
+                                    if 1 <= page <= max_page and page != page_index:
+                                        url = 'javascript: goToPage(%d)' % page
+                                    else:
+                                        url = 'javascript: void(0)'
+                                %>
+                                <li>
+                                    % if 'icon' == type_:
+                                        <a href="${url}"><i class="fa fa-${info}"></i></a>
+                                    % else:
+                                        <a href="#" class="disabled">${info|h}</a>
+                                    % endif
+                                </li>
+                            % endfor
+                        </ul>
+                    </nav>
+                </form>
+			</div>
+		</div>
+	</div>
+</div>
+</%block>
