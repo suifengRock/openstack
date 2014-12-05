@@ -1,0 +1,7 @@
+http://code.jquery.com/jquery-1.11.1.min.js	/lib/jquery-1.11.1.min.js
+http://code.jquery.com/jquery.js	/lib/jquery.js
+http://code.jquery.com/ui/1.11.0/jquery-ui.min.js	/lib/jquery-ui-1.11.1/jquery-ui.min.js
+http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css	/lib/jquery-ui-1.11.1/jquery-ui.css
+http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css	/lib/font-awesome-4.2.0/css/font-awesome.min.css
+http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css	/lib/font-awesome-4.2.0/css/font-awesome.css
+https://sellfy.com/js/api_buttons.js	/lib/api_buttons.js

@@ -1,0 +1,13 @@
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=zpstack
+export OS_AUTH_URL="http://192.168.1.200:5000/v2.0/"
+export OS_REGION_NAME=Ziipin
+export SG_SERVICE_CONTROLLER_IP=192.168.1.200
+export SG_SERVICE_CONTROLLER_NIC=em1
+export SG_SERVICE_TENANT_NAME=service
+export SG_SERVICE_EMAIL=zpstack@ziipin.com
+export SG_SERVICE_PASSWORD=zpstack
+export SG_SERVICE_TOKEN=e34203f5313073622d857454e9b2ef9e
+export SG_SERVICE_REGION=Ziipin
+export SG_SERVICE_CONTROLLER=1
