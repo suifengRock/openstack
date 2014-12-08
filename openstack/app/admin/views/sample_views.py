@@ -20,13 +20,13 @@ class Sample(AdminDispatchView):
 
 
 class TestFirst(AdminDispatchView):
-	__title__ = '测试1'
+	__title__       = '测试1'
 	__model_type__  = SampleModel
 	__form_type__   = SampleForm
 
 
 class TestSecond(AdminDispatchView):
-	__title__ = '测试2'
+	__title__       = '测试2'
 	__model_type__  = SampleModel
 	__form_type__   = SampleForm
 	__skipfields__  = ['name']
@@ -49,4 +49,19 @@ class Test(AdminDispatchView):
 			title = '测试',
 			test = 'python',
 			skip_fields = ['name'],
+			)
+class Dashboard(AdminDispatchView):
+	list_template = "/dashboard.html"
+	def _render(self, tpl_name, **kwargs):
+		tpl_kwargs = {}
+		tpl_kwargs.update(kwargs)
+		return render_template(tpl_name, **tpl_kwargs)
+
+	def list_GET(self):
+		if not self._allow_list():
+			abort(403)
+
+		return self._render(
+			self.list_template,
+			title = '橄榄',
 			)

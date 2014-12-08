@@ -1,0 +1,119 @@
+<%inherit file="/admin_frame.inc.html" />
+<%namespace name="form_utils" file="/niuhe/utils/bootstrap_form_utils.inc.html" />
+
+<%block>
+<div class="row-fluid">
+	<div id="dashboard_tabs" class="col-xs-12 col-sm-10">
+		<div id="dashboard-servers" class="row" style="visibility: visible; position: absolute;">
+			<div class="col-xs-12 col-sm-6 col-md-4 ow-server">
+				<h4 class="page-header text-right">#主机实例</h4>
+				<div class="ow-settings">
+					<a href="#"><i class="fa fa-gears"></i></a>
+				</div>
+				<div class="row ow-server-bottom">
+					<div class="col-sm-4">
+						<div class="knob-slider">
+							<input id="knob-srv-1" class="knob" data-width="60"  data-height="60" data-angleOffset="180" data-fgColor="#6AA6D6" data-skin="tron" data-thickness=".2" value="4"data-min="0" data-max="20"> 
+						</div>
+					</div>
+					<div class="col-sm-8">
+						<div class="row"><i class="fa fa-bolt"></i> 上限 - 20</div>
+						<div class="row"><i class="fa fa-user"></i> 已使用 - 4</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4 ow-server">
+				<h4 class="page-header text-right"></i>#虚拟内核</h4>
+				<div class="ow-settings">
+					<a href="#"><i class="fa fa-gears"></i></a>
+				</div>
+				<div class="row ow-server-bottom">
+					<div class="col-sm-4">
+						<div class="knob-slider">
+							<input id="knob-srv-2" class="knob" data-width="60"  data-height="60" data-angleOffset="180" data-fgColor="#6AA6D6" data-skin="tron" data-thickness=".2" value="4"data-min="0" data-max="20">
+						</div>
+					</div>
+					<div class="col-sm-8">
+						<div class="row"><i class="fa fa-bolt"></i> 上限 - 20</div>
+						<div class="row"><i class="fa fa-user"></i> 已使用 - 4</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4 ow-server">
+				<h4 class="page-header text-right">#内存</h4>
+				
+				<div class="ow-settings">
+					<a href="#"><i class="fa fa-gears"></i></a>
+				</div>
+				<div class="row ow-server-bottom">
+					<div class="col-sm-4">
+						<div class="knob-slider">
+							<input id="knob-srv-3" class="knob" data-width="60"  data-height="60" data-angleOffset="180" data-fgColor="#6AA6D6" data-skin="tron" data-thickness=".2" value="4.8"data-min="0" data-max="50"	>
+						</div>
+					</div>
+					<div class="col-sm-8">
+						<div class="row"><i class="fa fa-bolt"></i> 上限 - 50 G</div>
+						<div class="row"><i class="fa fa-user"></i> 已使用 - 4.8 G</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4 ow-server">
+				<h4 class="page-header text-right">#硬盘</h4>
+				<div class="ow-settings">
+					<a href="#"><i class="fa fa-gears"></i></a>
+				</div>
+				<div class="row ow-server-bottom">
+					<div class="col-sm-4">
+						<div class="knob-slider">
+							<input id="knob-srv-4" class="knob" data-width="60"  data-height="60" data-angleOffset="180" data-fgColor="#6AA6D6" data-skin="tron" data-thickness=".2" value="0"data-min="0" data-max="1000" >
+						</div>
+					</div>
+					<div class="col-sm-8">
+						<div class="row"><i class="fa fa-bolt"></i> 上限 - 1000 G</div>
+						<div class="row"><i class="fa fa-user"></i> 已使用 - 0 G</div>
+					</div>
+				</div>
+			</div>
+			<!--
+			<div class="col-xs-12 col-sm-6 col-md-4 ow-server">
+				<h4 class="page-header text-right"><i class="fa fa-linux"></i>#DEVEL</h4>
+				<div class="ow-settings">
+					<a href="#"><i class="fa fa-gears"></i></a>
+				</div>
+				<div class="row ow-server-bottom">
+					<div class="col-sm-4">
+						<div class="knob-slider">
+							<input id="knob-srv-6" class="knob" data-width="60"  data-height="60" data-angleOffset="180" data-fgColor="#6AA6D6" data-skin="tron" data-thickness=".2" value="">
+						</div>
+					</div>
+					<div class="col-sm-8">
+						<div class="row"><i class="fa fa-linux"></i> CentOS 6.5</div>
+						<div class="row"><i class="fa fa-archive"></i> Repositories - 17</div>
+						<div class="row"><i class="fa fa-bolt"></i> Uptime - 4 month 21 day</div>
+					</div>
+				</div>
+			</div>
+			-->
+			<div class="clearfix"></div>
+			
+		</div>
+	</div>
+</div>
+<script src="/static/devoops/plugins/jQuery-Knob/jquery.knob.js"></script>
+<script type="text/javascript">
+function DrawKnobDashboard(){
+	var srv_monitoring_selectors = [
+		$("#knob-srv-1"),$("#knob-srv-2"),$("#knob-srv-3"),
+		$("#knob-srv-4"),$("#knob-srv-5"),$("#knob-srv-6")
+	];
+	srv_monitoring_selectors.forEach(DrawKnob);
+	
+}
+
+$(document).ready(function() {
+	DrawKnobDashboard()
+});
+</script>
+</%block>
+
+

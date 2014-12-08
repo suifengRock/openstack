@@ -26,6 +26,32 @@
 			<script src="http://getbootstrap.com/docs-assets/js/respond.min.js"></script>
 	<![endif]-->
 
+	<script src="/static/devoops/plugins/jquery/jquery.min.js"></script>
+	<script src="/static/devoops/plugins/jquery-ui/jquery-ui.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/static/devoops/plugins/bootstrap/bootstrap.min.js"></script>
+	<script src="/static/devoops/plugins/justified-gallery/jquery.justifiedGallery.min.js"></script>
+	<script src="/static/devoops/plugins/tinymce/tinymce.min.js"></script>
+	<script src="/static/devoops/plugins/tinymce/jquery.tinymce.min.js"></script>
+	<!-- All functions for this theme + document.ready processing -->
+	<script src="/static/devoops/js/devoops.js"></script>
+
+	<script>
+		$(function() {
+			$('#toggle-style').on('click', function() {
+				var cur = parseInt('${request.cookies.get('devoops_style_version', '2')}');
+				if (1 != cur && 2 != cur) {
+					cur = 2;
+				}
+				cur = 3 - cur;
+				var exp = new Date();
+				exp.setTime(exp.getTime + 30 * 86400 * 1000);
+				document.cookie = 'devoops_style_version=' + cur + ';expires=' + exp.toGMTString() + ';path=/';;
+				location.reload();
+			});
+		});
+	</script>
+
 </head>
 
 <body>
@@ -82,12 +108,24 @@
 			<div id="sidebar-left" class="col-xs-2 col-sm-2">
 				<ul id="side-menu" class="nav main-menu">
 					<li>
-						<a href="/admin/sample/list">概览</a>
-						<a href="/admin/test_first/list">云主机</a>
-						<a href="/admin/test_second/list">云硬盘</a>
-						<a href="#">镜像</a>
-						<a href="#">访问规则</a>
+						<a href="/admin/dashboard/list">
+							 <i class="fa fa-dashboard"></i>
+							 <span class="hidden-xs">概览</span>
+						</a>
+						
 					</li>
+					<li class="dropdown">
+					<a href="#" class="dropdown-toggle">
+						<i class="fa fa-bar-chart-o"></i>
+						<span class="hidden-xs">组件</span>
+					</a>
+					<ul class="dropdown-menu">
+						<li> <a href="/admin/test_first/list">云主机</a> </li>
+						<li> <a href="/admin/test_second/list">云硬盘</a> </li>
+						<li> <a href="/admin/test/list">镜像</a> </li>
+						<li> <a href="#">访问规则</a> </li>
+					</ul>
+				</li>
 				</ul>
 			</div>
 			<div id="content" class="col-xs-12 col-sm-10">
@@ -130,31 +168,7 @@
 		</div>
 	</div>
 
-	<script src="/static/devoops/plugins/jquery/jquery.min.js"></script>
-	<script src="/static/devoops/plugins/jquery-ui/jquery-ui.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="/static/devoops/plugins/bootstrap/bootstrap.min.js"></script>
-	<script src="/static/devoops/plugins/justified-gallery/jquery.justifiedGallery.min.js"></script>
-	<script src="/static/devoops/plugins/tinymce/tinymce.min.js"></script>
-	<script src="/static/devoops/plugins/tinymce/jquery.tinymce.min.js"></script>
-	<!-- All functions for this theme + document.ready processing -->
-	<script src="/static/devoops/js/devoops.js"></script>
-
-	<script>
-		$(function() {
-			$('#toggle-style').on('click', function() {
-				var cur = parseInt('${request.cookies.get('devoops_style_version', '2')}');
-				if (1 != cur && 2 != cur) {
-					cur = 2;
-				}
-				cur = 3 - cur;
-				var exp = new Date();
-				exp.setTime(exp.getTime + 30 * 86400 * 1000);
-				document.cookie = 'devoops_style_version=' + cur + ';expires=' + exp.toGMTString() + ';path=/';;
-				location.reload();
-			});
-		});
-	</script>
+	
 	<%block name="scripts">
 	</%block>
 </body>
