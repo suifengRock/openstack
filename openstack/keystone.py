@@ -11,6 +11,9 @@ role = keystone.roles.list()
 
 print userList[0]
 print userList[0].username
+print keystone.tenant_id
+print keystone.user_id
+print keystone.services.list()
 
 
 
@@ -57,9 +60,30 @@ print nova.services.list()
 print nova.limits.get(tenant_id='9bbd825a9ade4860a08b452a41a78da1')
 print nova.flavors.list()
 print nova.quotas.get(tenant_id='9bbd825a9ade4860a08b452a41a78da1',
-						user_id='01057ca6ed074c53842fbf93e2bab949')
+						user_id='01057ca6ed074c53842fbf93e2bab949').cores
 
 print nova.quotas.defaults(tenant_id='9bbd825a9ade4860a08b452a41a78da1')
-print nova.usage.get(start=datetime.today(),
-						end=datetime.today(),
-						tenant_id='9bbd825a9ade4860a08b452a41a78da1')
+
+from novaclient import base
+server = nova.servers.list()[0]
+
+print server.name
+# server = nova.servers.find(name="spice7")
+
+# print server.flavor['id']
+
+print nova.servers.get(server)
+
+print server.image
+print server.flavor
+
+# print nova.images.get(server.image['id']).name
+
+flavor =  nova.flavors.get(server.flavor['id'])
+print flavor.ram
+print flavor.name
+print flavor.vcpus
+print flavor.disk
+print server.status
+
+
