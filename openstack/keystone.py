@@ -53,7 +53,7 @@ import novaclient.v1_1.client as nvclient
 from  datetime  import  datetime
 creds = get_nova_creds()
 nova = nvclient.Client(**creds)
-print nova.servers.list()
+# print nova.servers.list()
 print nova.images.list()
 print nova.agents.list()
 print nova.services.list()
@@ -72,18 +72,28 @@ print server.name
 
 # print server.flavor['id']
 
-print nova.servers.get(server)
+# print nova.servers.get(server)
 
 print server.image
 print server.flavor
 
 # print nova.images.get(server.image['id']).name
 
-flavor =  nova.flavors.get(server.flavor['id'])
+# flavor =  nova.flavors.get(server.flavor['id'])
+flavor = nova.flavors.list()[0]
 print flavor.ram
 print flavor.name
 print flavor.vcpus
 print flavor.disk
 print server.status
+
+# image = nova.images.find(name="spice7uav")
+# flavor = nova.flavors.find(name="m1.small")
+# instance = nova.servers.create(name="testPY", image=image, flavor=flavor)
+# print instance.status
+
+print nova.flavors.get("1").name
+
+
 
 

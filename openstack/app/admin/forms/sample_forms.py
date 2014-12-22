@@ -34,7 +34,6 @@ class SampleForm(Form):
                   )
     name        = TextField('名称')
 
-
 class UserForm(Form):
     username = TextField('用户名',
                 validators = [
@@ -59,4 +58,16 @@ class UserForm(Form):
                         message = "密码不能为空",
                     ),
                 ],)
-                    
+
+class ServerListForm(Form):
+    name = TextField('主机名')
+    images = TextField('镜像')
+    vcpu = TextField('虚拟主机数')
+    ram = TextField('内存大小')
+    disk = TextField('硬盘大小')
+    status = TextField('状态')
+
+class ServerEditForm(Form):
+    name = TextField('主机名')
+    images = TextField('镜像')
+    flavor = TextField('配置')

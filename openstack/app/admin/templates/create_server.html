@@ -1,0 +1,77 @@
+<%inherit file="/admin_frame.inc.html" />
+<%namespace name="form_utils" file="/niuhe/utils/bootstrap_form_utils.inc.html" />
+
+<%block>
+<div class="row">
+	<div class="col-xs-12 col-sm-12">
+		<div class="box">
+			<div class="box-content">
+				<h4 class="page-header">
+					新建主机实例
+				</h4>
+				
+    <form action="" method="POST" class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="name">主机名</label>
+            <div class="col-sm-5">
+                <input class="form-control" id="name" name="name" type="text" value="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="images" >镜像</label>
+            <div class="col-sm-5">
+                <select class="form-control" name="images" id="images">
+                	% for obj in images_list:
+						<option value="${obj.name}">${obj.name}</option>
+					% endfor
+				</select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="flavor">配置</label>
+            <div class="col-sm-5">
+                 <select class="form-control" name="flavor" id="flavor" onchange="changeFlavor(this.value);">
+                 	% for obj in flavor_list:
+						<option value="${obj.id}">${obj.name}</option>
+					% endfor	
+				</select>
+				<div class="box">
+					<div class="box-content" id="box-content">
+						% for obj in flavor_list:
+							<h5 id="${obj.id}" class="hidden">内核: ${obj.vcpus} 个  &nbsp;&nbsp;| 内存: ${obj.ram/1024.00} G  &nbsp;&nbsp;| 硬盘: ${obj.disk} G </h5>
+						% endfor
+					</div>
+				</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-5">
+                <button type="submit" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </form>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="/static/devoops/plugins/select2/select2.min.js"></script>
+<script type="text/javascript">
+function changeFlavor(val) {
+		$("#box-content h5").addClass("hidden")
+		$("#"+val).toggleClass("hidden");
+};
+
+function getFirstFlavor() {
+	flavorId = $("#flavor").val();
+	$("#"+flavorId).removeClass("hidden");
+};
+
+$(document).ready(function() {
+	getFirstFlavor();
+	
+})
+</script>
+</%block>
